@@ -1,0 +1,80 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install root deps
+        run: npm install --no-audit --no-fund
+
+      - name: Install webview deps
+        run: npm install --prefix webview --no-audit --no-fund
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build extension
+        run: npm run build
+
+      - name: Build webview
+        run: npm run build:webview
+
+      - name: Unit tests
+        run: npm run test:unit
+
+      - name: Webview tests
+        run: npm run test:webview
+
+      - name: Smoke test (extension host)
+        run: xvfb-run -a npm run test:smoke:extension
+
+  e2e:
+    runs-on: ubuntu-latest
+    needs: lint-and-test
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install root deps
+        run: npm install --no-audit --no-fund
+
+      - name: Install webview deps
+        run: npm install --prefix webview --no-audit --no-fund
+
+      - name: Build extension
+        run: npm run build
+
+      - name: Build webview
+        run: npm run build:webview
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: E2E tests (all 3 scenarios)
+        run: xvfb-run -a npm run test:e2e
