@@ -1,0 +1,56 @@
+name: RepoNav Check Action
+description: Run RepoNav's architecture check against a target repository with configurable thresholds.
+
+inputs:
+  repo-path:
+    description: Target repository path to analyze. Defaults to the checked out workflow workspace.
+    required: false
+    default: ''
+  node-version:
+    description: Node.js version used to run the RepoNav CLI.
+    required: false
+    default: '22'
+  max-violations:
+    description: Fail if layer violations exceed this number.
+    required: false
+    default: '132'
+  max-dead-code:
+    description: Fail if dead-code candidates exceed this number.
+    required: false
+    default: '240'
+  max-blast-radius:
+    description: Fail if the maximum blast-radius score exceeds this number.
+    required: false
+    default: '58'
+
+runs:
+  using: composite
+  steps:
+    - name: Setup Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ inputs.node-version }}
+        cache: npm
+        cache-dependency-path: ${{ github.action_path }}/package-lock.json
+
+    - name: Install RepoNav dependencies
+      shell: bash
+      working-directory: ${{ github.action_path }}
+      run: npm ci
+
+    - name: Run RepoNav check
+      shell: bash
+      working-directory: ${{ github.action_path }}
+      env:
+        INPUT_REPO_PATH: ${{ inputs.repo-path }}
+        INPUT_MAX_VIOLATIONS: ${{ inputs.max-violations }}
+        INPUT_MAX_DEAD_CODE: ${{ inputs.max-dead-code }}
+        INPUT_MAX_BLAST_RADIUS: ${{ inputs.max-blast-radius }}
+      run: |
+        set -euo pipefail
+        TARGET_REPO="${INPUT_REPO_PATH:-$GITHUB_WORKSPACE}"
+        node_modules/.bin/vite-node --script bin/reponav.ts check \
+          --repo "$TARGET_REPO" \
+          --max-violations "$INPUT_MAX_VIOLATIONS" \
+          --max-dead-code "$INPUT_MAX_DEAD_CODE" \
+          --max-blast-radius "$INPUT_MAX_BLAST_RADIUS"

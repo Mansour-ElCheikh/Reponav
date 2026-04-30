@@ -1,0 +1,236 @@
+{
+    "name": "reponav",
+    "displayName": "RepoNav — Architecture Tours",
+    "description": "Generate interactive architecture tours for any codebase. Understand repos in minutes, not days.",
+    "version": "0.1.0",
+    "publisher": "reponav",
+    "bin": {
+        "reponav": "./dist/bin/reponav.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/mansour-90/reponav"
+    },
+    "engines": {
+        "vscode": "^1.85.0"
+    },
+    "categories": [
+        "Visualization",
+        "Education",
+        "Other"
+    ],
+    "keywords": [
+        "architecture",
+        "codebase",
+        "onboarding",
+        "visualization",
+        "dependency graph"
+    ],
+    "activationEvents": [
+        "onStartupFinished"
+    ],
+    "main": "./dist/extension.js",
+    "icon": "media/icon.png",
+    "contributes": {
+        "commands": [
+            {
+                "command": "reponav.openPanel",
+                "title": "RepoNav: Open Panel",
+                "icon": "$(open-preview)"
+            },
+            {
+                "command": "reponav.generateTour",
+                "title": "RepoNav: Generate Architecture Tour",
+                "icon": "$(compass)"
+            },
+            {
+                "command": "reponav.showDependencyGraph",
+                "title": "RepoNav: Show Dependency Graph",
+                "icon": "$(type-hierarchy)"
+            },
+            {
+                "command": "reponav.analyzeWorkspace",
+                "title": "RepoNav: Analyze Workspace",
+                "icon": "$(search)"
+            },
+            {
+                "command": "reponav.healthCheck",
+                "title": "RepoNav: Health Check",
+                "icon": "$(pulse)"
+            },
+            {
+                "command": "reponav.clearCache",
+                "title": "RepoNav: Clear Cache",
+                "icon": "$(trash)"
+            }
+        ],
+        "menus": {
+            "view/title": [
+                {
+                    "command": "reponav.openPanel",
+                    "when": "view == reponav.tourHistory || view == reponav.metrics",
+                    "group": "navigation"
+                },
+                {
+                    "command": "reponav.generateTour",
+                    "when": "view == reponav.tourHistory || view == reponav.metrics",
+                    "group": "navigation"
+                }
+            ]
+        },
+        "viewsContainers": {
+            "activitybar": [
+                {
+                    "id": "reponav",
+                    "title": "RepoNav",
+                    "icon": "$(compass)"
+                }
+            ]
+        },
+        "views": {
+            "reponav": [
+                {
+                    "id": "reponav.tourHistory",
+                    "name": "Tour History",
+                    "icon": "media/icon.png"
+                },
+                {
+                    "id": "reponav.metrics",
+                    "name": "Code Metrics",
+                    "icon": "media/icon.png"
+                }
+            ]
+        },
+        "configuration": {
+            "title": "RepoNav",
+            "properties": {
+                "reponav.aiProvider": {
+                    "type": "string",
+                    "enum": [
+                        "auto",
+                        "vscode-lm",
+                        "groq",
+                        "gemini",
+                        "anthropic",
+                        "openai",
+                        "mock"
+                    ],
+                    "enumDescriptions": [
+                        "Auto-detect: uses VS Code Language Model (Copilot/Claude) if available, falls back to Groq",
+                        "VS Code Language Model only (requires Copilot or Claude extension)",
+                        "Groq (Llama 3.3 70B) — requires API key",
+                        "Google Gemini — requires API key",
+                        "Anthropic Claude — requires API key",
+                        "OpenAI GPT — requires API key",
+                        "Mock provider (offline demo)"
+                    ],
+                    "default": "auto",
+                    "description": "Which AI provider to use for generating tours"
+                },
+                "reponav.geminiApiKey": {
+                    "type": "string",
+                    "default": "",
+                    "description": "Google Gemini API key for tour generation"
+                },
+                "reponav.anthropicApiKey": {
+                    "type": "string",
+                    "default": "",
+                    "description": "Anthropic API key for tour generation (Claude 3.5 Sonnet)"
+                },
+                "reponav.openAIApiKey": {
+                    "type": "string",
+                    "default": "",
+                    "description": "OpenAI API key for tour generation (GPT-4o)"
+                },
+                "reponav.groqApiKey": {
+                    "type": "string",
+                    "default": "",
+                    "description": "Groq API key for tour generation (Llama 3.3 70B — fast, free tier available)"
+                },
+                "reponav.tourCacheEnabled": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Cache generated tours in workspace .reponav/ folder"
+                },
+                "reponav.preferredLMFamily": {
+                    "type": "string",
+                    "default": "claude",
+                    "description": "Preferred VS Code Language Model family when aiProvider is 'auto' or 'vscode-lm'. Tried first; falls back through gpt-4o, gemini, then any available model. Examples: claude, gpt-4o, gemini, o3."
+                },
+                "reponav.maxFilesToAnalyze": {
+                    "type": "number",
+                    "default": 500,
+                    "description": "Maximum number of files to include in analysis"
+                },
+                "reponav.demoMode": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Enable demo-only UI affordances such as loading a bundled sample tour"
+                }
+            }
+        }
+    },
+    "scripts": {
+        "vscode:prepublish": "npm run build",
+        "build": "npm run build:esbuild && npm run build:webview",
+        "dev:extension": "node scripts/dev-extension.js",
+        "watch": "npm run watch:tsc",
+        "build:quick": "node scripts/transpile-extension.js && node scripts/postbuild-extension.js",
+        "build:tsc": "tsc -p tsconfig.json && node scripts/postbuild-extension.js",
+        "watch:tsc": "node scripts/postbuild-extension.js && tsc -p tsconfig.json --watch --preserveWatchOutput",
+        "build:esbuild": "node esbuild.js --production",
+        "watch:esbuild": "node esbuild.js --watch",
+        "build:webview": "cd webview && npm run build",
+        "lint": "npm run lint:root && npm run lint:webview",
+        "lint:root": "eslint --ext .ts,.tsx src/ bin/",
+        "lint:webview": "eslint --ext .ts,.tsx webview/src/",
+        "test": "npm run test:root && npm run test:webview",
+        "test:unit": "vitest run",
+        "test:root": "npm run test:coverage:check",
+        "test:webview": "npm --prefix webview test",
+        "test:e2e": "npx playwright test",
+        "test:e2e:extension": "node scripts/smoke/runTest.js",
+        "test:smoke:extension": "node scripts/smoke/runTest.js",
+        "test:watch": "vitest",
+        "test:coverage": "vitest run --coverage",
+        "test:coverage:check": "vitest run --coverage && node -e \"const f=require('fs').readFileSync('coverage/coverage-summary.json','utf8');const c=JSON.parse(f).total.lines.pct;if(c<80){console.error('Coverage below 80%');process.exit(1)}\"",
+        "rn": "node_modules/.bin/vite-node --script bin/reponav.ts",
+        "rn:analyze": "node_modules/.bin/vite-node --script bin/reponav.ts analyze --repo .",
+        "rn:summary": "node_modules/.bin/vite-node --script bin/reponav.ts analyze --repo . --format summary",
+        "rn:check": "node_modules/.bin/vite-node --script bin/reponav.ts check --repo . --max-violations 132 --max-dead-code 240 --max-blast-radius 58",
+        "rn:dead-code": "node_modules/.bin/vite-node --script bin/reponav.ts dead-code --repo .",
+        "rn:coupling": "node_modules/.bin/vite-node --script bin/reponav.ts coupling --repo .",
+        "rn:flows": "node_modules/.bin/vite-node --script bin/reponav.ts flows --repo .",
+        "rn:impact": "node_modules/.bin/vite-node --script bin/reponav.ts impact --repo .",
+        "rn:violations": "node_modules/.bin/vite-node --script bin/reponav.ts analyze --repo . --format json | node -e \"const c=[];process.stdin.on('data',d=>c.push(d));process.stdin.on('end',()=>{const r=JSON.parse(c.join(''));console.log(JSON.stringify(r.layerViolations??[],null,2));})\"",
+        "package": "vsce package"
+    },
+    "devDependencies": {
+        "@playwright/test": "^1.59.1",
+        "@types/node": "^20.11.0",
+        "@types/vscode": "^1.85.0",
+        "@typescript-eslint/parser": "^8.57.2",
+        "@vitest/coverage-v8": "^1.6.1",
+        "@vscode/test-electron": "^2.5.2",
+        "@vscode/vsce": "^2.22.0",
+        "esbuild": "^0.20.0",
+        "eslint": "^8.56.0",
+        "eslint-plugin-import": "^2.32.0",
+        "eslint-plugin-react-hooks": "^4.6.2",
+        "jsdom": "^26.1.0",
+        "tree-sitter-python": "^0.25.0",
+        "typescript": "^5.3.3",
+        "vitest": "^1.6.1"
+    },
+    "dependencies": {
+        "@anthropic-ai/sdk": "^0.78.0",
+        "@google/generative-ai": "^0.21.0",
+        "@modelcontextprotocol/sdk": "^1.29.0",
+        "openai": "^6.22.0",
+        "sql.js": "^1.14.0",
+        "tree-sitter-go": "^0.25.0",
+        "web-tree-sitter": "^0.26.5",
+        "yaml": "^2.8.2",
+        "zod": "^4.3.6"
+    }
+}
