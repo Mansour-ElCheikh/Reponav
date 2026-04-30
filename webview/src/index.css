@@ -1,0 +1,561 @@
+/**
+ * RepoNav WebView Styles
+ *
+ * Uses VS Code's CSS variables for seamless theme integration.
+ * Dark mode by default (matches VS Code's dark themes).
+ */
+
+/* ─── CSS Variables ───────────────────────────────────────────────────────── */
+
+:root {
+  --bg-primary: var(--vscode-editor-background, #0f172a);
+  --bg-secondary: var(--vscode-sideBar-background, #1e293b);
+  --bg-tertiary: var(--vscode-editorGroupHeader-tabsBackground, #0f172a);
+  --text-primary: var(--vscode-editor-foreground, #e2e8f0);
+  --text-secondary: var(--vscode-descriptionForeground, #94a3b8);
+  --accent-primary: var(--vscode-button-background, hsl(199, 90%, 64%));
+  --accent-hover: var(--vscode-button-hoverBackground, hsl(199, 90%, 54%));
+  --border-color: var(--vscode-panel-border, #334155);
+  --node-bg: var(--vscode-input-background, #1e293b);
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --radius: 8px;
+}
+
+/* ─── Base Reset ──────────────────────────────────────────────────────────── */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--vscode-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif);
+  font-size: var(--vscode-font-size, 13px);
+  color: var(--text-primary);
+  background: var(--bg-primary);
+  overflow: hidden;
+}
+
+/* ─── App Layout ──────────────────────────────────────────────────────────── */
+
+.app {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.tour-layout {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+.tour-layout--story .tour-sidebar {
+  width: 420px;
+}
+
+.tour-layout--story .tour-graph {
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.88), rgba(15, 23, 42, 0.98));
+}
+
+.tour-layout--analyst .tour-sidebar {
+  width: 340px;
+}
+
+.tour-sidebar {
+  width: 380px;
+  min-width: 320px;
+  border-right: 1px solid var(--border-color);
+  overflow-y: auto;
+  background: var(--bg-secondary);
+  transition: width 0.2s ease;
+}
+
+.tour-graph {
+  flex: 1;
+  min-width: 0;
+  position: relative;
+}
+
+.workspace-tabs {
+  display: flex;
+  gap: 8px;
+  padding: 8px 12px 0;
+  background: var(--bg-primary);
+}
+
+.workspace-tab {
+  border: 1px solid var(--border-color);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 12px;
+}
+
+.workspace-tab--active {
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
+  color: #ffffff;
+}
+
+/* ─── Query Bar ───────────────────────────────────────────────────────────── */
+
+.query-bar {
+  width: 100%;
+  max-width: 500px;
+  margin: 8px auto 0;
+}
+
+.preset-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+
+.preset-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.2s ease;
+}
+
+.preset-btn:hover {
+  border-color: var(--accent-primary);
+  background: var(--accent-primary);
+  color: white;
+  transform: translateY(-1px);
+}
+
+.preset-icon {
+  width: 16px;
+  height: 16px;
+  stroke-width: 1.8;
+}
+
+.query-form {
+  display: flex;
+  gap: 8px;
+}
+
+.query-input {
+  flex: 1;
+  padding: 10px 14px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.query-input:focus {
+  border-color: var(--accent-primary);
+}
+
+.query-input::placeholder {
+  color: var(--text-secondary);
+}
+
+.query-submit {
+  padding: 10px 18px;
+  border: none;
+  border-radius: var(--radius);
+  background: var(--accent-primary);
+  color: white;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 13px;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.query-submit:hover:not(:disabled) {
+  background: var(--accent-hover);
+  box-shadow: 0 0 20px hsla(199, 90%, 64%, 0.25);
+}
+
+.query-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.query-validation-error {
+  color: #ff6b6b;
+  font-size: 0.8rem;
+  margin: 6px 0 0;
+  grid-column: 1 / -1;
+}
+
+/* ─── Bottom Bar ──────────────────────────────────────────────────────────── */
+
+.tour-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+  border-top: 1px solid var(--border-color);
+  background: var(--bg-tertiary);
+  font-size: 12px;
+}
+
+.tour-bar-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.workspace-mode-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px;
+  border: 1px solid var(--border-color);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--bg-secondary) 85%, transparent);
+}
+
+.workspace-mode-btn {
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 5px 10px;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.workspace-mode-btn:hover {
+  color: var(--text-primary);
+}
+
+.workspace-mode-btn--active {
+  background: var(--accent-primary);
+  color: #ffffff;
+}
+
+.tour-type-badge {
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: var(--accent-primary);
+  color: white;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.tour-query {
+  color: var(--text-secondary);
+  max-width: 300px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tour-bar-stats {
+  display: flex;
+  gap: 8px;
+  color: var(--text-secondary);
+}
+
+/* ─── Scrollbar ───────────────────────────────────────────────────────────── */
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-secondary);
+}
+
+.tour-git-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--success);
+  padding: 2px 8px;
+  border: 1px solid var(--success);
+  border-radius: 10px;
+  opacity: 0.8;
+}
+
+.tour-git-icon {
+  width: 14px;
+  height: 14px;
+}
+
+.tour-git-changes {
+  color: var(--warning);
+  font-weight: 600;
+}
+
+/* ─── New Tour Button (Bottom Bar) ────────────────────────────────────────── */
+
+.btn-new-tour {
+  margin-left: 8px;
+  padding: 4px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.btn-new-tour:hover {
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+  background: var(--bg-secondary);
+}
+
+/* ─── RepoNav Wiz ─────────────────────────────────────────────────────────── */
+
+/* FAB — unchanged position, accent color */
+.assistant-chat-fab {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--accent-primary);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  z-index: 1000;
+  transition: background 0.15s;
+}
+.assistant-chat-fab:hover { background: var(--accent-hover); }
+
+/* Input panel — thin bar just above FAB */
+.wiz-input-panel {
+  position: fixed;
+  bottom: 72px;
+  right: 20px;
+  width: 320px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  z-index: 1000;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+}
+
+.wiz-input-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 10px;
+  background: var(--bg-tertiary);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.wiz-brand {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--accent-primary);
+  letter-spacing: 0.03em;
+}
+
+.wiz-input-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.wiz-help-btn {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 2px;
+  border-radius: 3px;
+  transition: color 0.12s;
+}
+.wiz-help-btn:hover:not(:disabled) { color: var(--text-primary); }
+.wiz-help-btn:disabled { opacity: 0.4; cursor: default; }
+
+.wiz-clear-btn {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 0.7rem;
+  padding: 2px 4px;
+  border-radius: 3px;
+  transition: color 0.12s;
+}
+.wiz-clear-btn:hover { color: var(--text-primary); }
+
+.wiz-input-row {
+  display: flex;
+  gap: 6px;
+  padding: 8px 10px;
+}
+
+/* Card stack — fixed column above input panel */
+.wiz-card-stack {
+  position: fixed;
+  bottom: 148px;
+  right: 20px;
+  width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 999;
+  max-height: calc(100vh - 200px);
+  overflow-y: auto;
+  padding-bottom: 4px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-color) transparent;
+}
+.wiz-card-stack::-webkit-scrollbar { width: 6px; }
+.wiz-card-stack::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 3px;
+}
+.wiz-card-stack::-webkit-scrollbar-track { background: transparent; }
+
+/* Individual card — slides in from right */
+@keyframes wiz-slide-in {
+  from { opacity: 0; transform: translateX(16px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.wiz-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+  animation: wiz-slide-in 0.18s ease-out both;
+  overflow: hidden;
+}
+
+.wiz-card--error {
+  border-color: var(--danger);
+}
+
+.wiz-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 10px;
+  background: var(--bg-tertiary);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.wiz-card-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--accent-primary);
+  letter-spacing: 0.02em;
+}
+
+.wiz-card-dismiss {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 2px;
+  border-radius: 3px;
+  transition: color 0.12s;
+}
+.wiz-card-dismiss:hover { color: var(--text-primary); }
+
+.wiz-card-body {
+  padding: 10px 12px;
+  font-size: 0.8rem;
+  color: var(--text-primary);
+  max-height: 260px;
+  overflow-y: auto;
+  line-height: 1.5;
+}
+
+/* Shared input + send styles (used by wiz-input-row) */
+.assistant-chat-input {
+  flex: 1;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  color: var(--text-primary);
+  padding: 6px 8px;
+  font-size: 0.8rem;
+  outline: none;
+}
+.assistant-chat-input:focus { border-color: var(--accent-primary); }
+.assistant-chat-send {
+  background: var(--accent-primary);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 12px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: background 0.15s;
+}
+.assistant-chat-send:hover:not(:disabled) { background: var(--accent-hover); }
+.assistant-chat-send:disabled { opacity: 0.4; cursor: default; }
+
+/* Markdown renderer classes — shared by wiz-card-body */
+.assistant-error { color: var(--danger); }
+.assistant-reply { margin-bottom: 8px; color: var(--text-secondary); }
+.assistant-h2 {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 12px 0 4px;
+}
+.assistant-h3 {
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 8px 0 2px;
+}
+.assistant-list { padding-left: 16px; margin: 4px 0 8px; }
+.assistant-list li { margin-bottom: 3px; }
+.assistant-inline-code {
+  font-family: var(--editor-font-family, monospace);
+  font-size: 0.78rem;
+  background: var(--bg-tertiary);
+  padding: 1px 4px;
+  border-radius: 3px;
+  color: var(--text-primary);
+}

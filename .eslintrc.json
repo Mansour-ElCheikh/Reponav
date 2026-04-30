@@ -1,0 +1,48 @@
+{
+  "root": true,
+  "parser": "@typescript-eslint/parser",
+  "plugins": ["import", "react-hooks"],
+  "rules": {
+    "import/order": [
+      "warn",
+      {
+        "groups": [
+          "builtin",
+          "external",
+          "internal",
+          "parent",
+          "sibling",
+          "index"
+        ],
+        "newlines-between": "never",
+        "alphabetize": {
+          "order": "asc",
+          "caseInsensitive": true
+        }
+      }
+    ]
+  },
+  "settings": {
+    "import/resolver": {
+      "node": {
+        "extensions": [".ts", ".tsx", ".js", ".jsx"]
+      }
+    }
+  },
+  "overrides": [
+    {
+      "files": ["src/analyzers/fileReading.ts", "src/analyzers/fileSelection.ts", "src/analyzers/flowDetector.ts", "src/analyzers/metricsCollector.ts", "src/analyzers/repoCharacterDetector.ts", "src/analyzers/entryPointDetector.ts", "src/analyzers/TreeSitterProvider.ts", "src/analyzers/graphStructuralClassifier.ts", "src/analyzers/changeCouplingAnalyzer.ts", "src/analyzers/reportFormatting.ts", "src/analyzers/__fixtures__/flow-express.ts", "src/analyzers/__fixtures__/flow-fastapi.ts"],
+      "rules": {
+        "no-magic-numbers": [
+          "error",
+          {
+            "ignore": [-1, 0, 1, 2],
+            "ignoreArrayIndexes": true,
+            "enforceConst": true,
+            "detectObjects": false
+          }
+        ]
+      }
+    }
+  ]
+}

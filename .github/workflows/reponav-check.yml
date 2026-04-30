@@ -1,0 +1,41 @@
+name: RepoNav Architecture Gate
+
+on:
+  push:
+    branches: [main, baseline/**]
+  workflow_call:
+    inputs:
+      max-violations:
+        description: 'Fail if layer violations exceed this number'
+        required: false
+        default: '132'
+        type: string
+      max-dead-code:
+        description: 'Fail if dead code candidates exceed this number'
+        required: false
+        default: '240'
+        type: string
+      max-blast-radius:
+        description: 'Fail if max blast radius score exceeds this number'
+        required: false
+        default: '58'
+        type: string
+
+jobs:
+  architecture-gate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: RepoNav architecture check
+        uses: ./
+        with:
+          repo-path: .
+          node-version: '22'
+          max-violations: ${{ inputs.max-violations || '132' }}
+          max-dead-code: ${{ inputs.max-dead-code || '240' }}
+          max-blast-radius: ${{ inputs.max-blast-radius || '58' }}

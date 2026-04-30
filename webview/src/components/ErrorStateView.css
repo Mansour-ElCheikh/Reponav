@@ -1,0 +1,76 @@
+.error-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+.error-container {
+  text-align: center;
+  max-width: 420px;
+  padding: 40px;
+}
+
+.error-container h2 {
+  font-size: 20px;
+  margin-bottom: 8px;
+}
+
+.error-icon {
+  width: 48px;
+  height: 48px;
+  color: var(--danger);
+  margin-bottom: 16px;
+}
+
+.error-message {
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+.error-hint {
+  color: var(--text-secondary);
+  font-size: 12px;
+  margin-bottom: 16px;
+  opacity: 0.8;
+}
+
+.error-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 16px;
+}
+
+.btn-primary {
+  padding: 10px 20px;
+  border: none;
+  border-radius: var(--radius);
+  background: var(--accent-primary);
+  color: white;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 13px;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+
+.btn-primary:hover {
+  background: var(--accent-hover);
+  box-shadow: 0 0 20px hsla(199, 90%, 64%, 0.25);
+}
+
+.btn-secondary {
+  padding: 10px 20px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--text-primary);
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.2s;
+}
+
+.btn-secondary:hover {
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+}
