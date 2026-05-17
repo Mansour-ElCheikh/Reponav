@@ -2,8 +2,8 @@
 
 > **The deterministic architecture sensor for any codebase.** RepoNav reads what's there — symbols, imports, layers, churn, ownership — and surfaces it across IDE, CLI, MCP, and CI. It senses your repo. It does not refactor, score, or run it.
 
-[![CI](https://github.com/mansour-90/reponav/actions/workflows/ci.yml/badge.svg)](https://github.com/mansour-90/reponav/actions/workflows/ci.yml)
-[![Release](https://img.shields.io/github/v/release/mansour-90/reponav)](https://github.com/mansour-90/reponav/releases)
+[![CI](https://github.com/Mansour-ElCheikh/Reponav/actions/workflows/ci.yml/badge.svg)](https://github.com/Mansour-ElCheikh/Reponav/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/Mansour-ElCheikh/Reponav)](https://github.com/Mansour-ElCheikh/Reponav/releases)
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache--2.0-blue.svg)](LICENSE)
 
 ---
@@ -25,7 +25,7 @@ A **deterministic graph + analyzer fan-out** over your repo. Tree-sitter parses,
 |---|---|
 | **CLI** (`reponav <cmd>`) | Headless analysis — scripts, ad-hoc inspection, agent automation |
 | **MCP server** (`reponav mcp`) | Structured repo intelligence for LLM agents (Claude Desktop, Cursor, Cline, etc.) |
-| **GitHub Action** (`mansour-90/reponav@v0.1.0`) | CI gating on architecture metrics |
+| **GitHub Action** (`Mansour-ElCheikh/Reponav@v0.2.2`) | CI gating on architecture metrics |
 | **VS Code extension** | Interactive tours, dependency graphs, in-IDE Q&A |
 
 The CLI is the canonical surface — extension and action wrap the same engine.
@@ -70,14 +70,14 @@ This pipeline is the entire crafted value of RepoNav. Surfaces are different way
 
 ### CLI (interim — pre-npm publish)
 
-`v0.1.0` ships via GitHub Releases. npm registry publish lands in `v0.1.x`. Until then:
+`v0.2.2` ships via GitHub Releases. npm registry publish lands in `v0.2.x`. Until then:
 
 ```bash
 # One-off via npx (resolves bin entry from the GitHub repo)
-npx github:mansour-90/reponav#v0.1.0 analyze --repo .
+npx github:Mansour-ElCheikh/Reponav#v0.2.2 analyze --repo .
 
 # Or clone + link for repeated use
-git clone https://github.com/mansour-90/reponav.git
+git clone https://github.com/Mansour-ElCheikh/Reponav.git
 cd reponav && npm install && npm run build
 npm link    # exposes `reponav` on PATH
 reponav analyze --repo /path/to/target
@@ -85,13 +85,13 @@ reponav analyze --repo /path/to/target
 
 ### VS Code Extension
 
-Download `reponav-0.1.0.vsix` from [GitHub Releases v0.1.0](https://github.com/mansour-90/reponav/releases/tag/v0.1.0):
+Download `reponav-0.2.2.vsix` from [GitHub Releases v0.2.2](https://github.com/Mansour-ElCheikh/Reponav/releases/tag/v0.2.2):
 
 ```bash
-code --install-extension reponav-0.1.0.vsix
+code --install-extension reponav-0.2.2.vsix
 ```
 
-Marketplace listing lands in `v0.1.x` once the publisher account is finalized.
+Marketplace listing lands in `v0.2.x` once the publisher account is finalized.
 
 ### MCP server
 
@@ -102,7 +102,7 @@ Add to your agent config:
   "mcpServers": {
     "reponav": {
       "command": "npx",
-      "args": ["github:mansour-90/reponav#v0.1.0", "mcp"]
+      "args": ["github:Mansour-ElCheikh/Reponav#v0.2.2", "mcp"]
     }
   }
 }
@@ -122,7 +122,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with: { fetch-depth: 0 }
-      - uses: mansour-90/reponav@v0.1.0
+      - uses: Mansour-ElCheikh/Reponav@v0.2.2
         with:
           repo-path: .
           max-violations: '5'
@@ -233,7 +233,7 @@ See [ARCHITECTURE.md](ARCHITECTURE.md). Single-install, zero infrastructure depe
 
 ## Issues
 
-Bugs, feature requests, questions: [github.com/mansour-90/reponav/issues](https://github.com/mansour-90/reponav/issues).
+Bugs, feature requests, questions: [github.com/Mansour-ElCheikh/Reponav/issues](https://github.com/Mansour-ElCheikh/Reponav/issues).
 
 For security issues, see [SECURITY.md](SECURITY.md).
 

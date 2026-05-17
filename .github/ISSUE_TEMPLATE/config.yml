@@ -1,8 +1,8 @@
 blank_issues_enabled: false
 contact_links:
   - name: Security vulnerability
-    url: https://github.com/mansour-90/reponav/security/advisories/new
+    url: https://github.com/Mansour-ElCheikh/Reponav/security/advisories/new
     about: Report security issues privately via GitHub Security Advisory.
   - name: Discussion / question
-    url: https://github.com/mansour-90/reponav/discussions
+    url: https://github.com/Mansour-ElCheikh/Reponav/discussions
     about: Open-ended questions and ideas. Use issues for bugs and concrete feature requests.

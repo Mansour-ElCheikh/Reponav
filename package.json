@@ -2,7 +2,7 @@
     "name": "reponav",
     "displayName": "RepoNav — Architecture Tours",
     "description": "Generate interactive architecture tours for any codebase. Understand repos in minutes, not days.",
-    "version": "0.2.1",
+    "version": "0.2.2",
     "publisher": "reponav",
     "bin": {
         "reponav": "./dist/bin/reponav.js"

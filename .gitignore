@@ -44,6 +44,9 @@ test-results/
 # Session harvest commit stamp (local-only, resets nudge counter)
 .reponav/.last-harvest-commit
 
+# Post-commit dispatcher sentinel (local-only, throttles run cadence)
+.reponav/.last-dispatcher-run
+
 # Proctor scorecard generated artifacts
 .reponav/proctor/scorecard-latest.json
 .reponav/proctor/scorecard/

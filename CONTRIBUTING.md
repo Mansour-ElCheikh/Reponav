@@ -6,7 +6,7 @@
 
 Lean by design. In v1:
 
-- **Issues are welcome.** Bug reports, feature requests, questions — open one at [github.com/mansour-90/reponav/issues](https://github.com/mansour-90/reponav/issues).
+- **Issues are welcome.** Bug reports, feature requests, questions — open one at [github.com/Mansour-ElCheikh/Reponav/issues](https://github.com/Mansour-ElCheikh/Reponav/issues).
 - **PRs are reviewed at maintainer discretion.** No formal four-point bar in v1.
 - **No support SLA.** Best-effort response.
 

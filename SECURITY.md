@@ -4,7 +4,7 @@
 
 Please report security issues privately, not as public GitHub issues.
 
-**Channel:** [GitHub Security Advisory](https://github.com/mansour-90/reponav/security/advisories/new) (preferred), or email `security@reponav.dev` if the advisory channel is unavailable.
+**Channel:** [GitHub Security Advisory](https://github.com/Mansour-ElCheikh/Reponav/security/advisories/new) (preferred), or email `security@reponav.dev` if the advisory channel is unavailable.
 
 Include:
 - Affected version (`reponav --version` or extension version)
@@ -20,8 +20,8 @@ Best-effort in v1. No formal SLA. We aim to acknowledge within one week and patc
 
 | Version | Supported |
 |---|---|
-| `0.1.x` | Yes (current) |
-| `< 0.1.0` | No |
+| `0.2.x` | Yes (current) |
+| `< 0.2.0` | No |
 
 ## Scope
 

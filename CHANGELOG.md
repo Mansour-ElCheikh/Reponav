@@ -51,7 +51,7 @@ Initial public release.
 - VS Code extension with architecture tour generation, dependency graphs, and in-IDE Q&A
 - CLI (`npx reponav`) with `analyze`, `check`, `impact`, `flows`, `coupling`, and `mcp` subcommands
 - MCP (Model Context Protocol) server for LLM agent integration
-- GitHub Action (`mansour-90/reponav@v0.1.0`) for CI architecture gating
+- GitHub Action (`Mansour-ElCheikh/Reponav@v0.1.0`) for CI architecture gating
 - Multi-language analyzer support: TypeScript, JavaScript, TSX, Python, Go
 - Deterministic graph + analyzer fan-out (file selection → tree-sitter parse → graph build → analyzer fan-out → serializer)
 - Analysis tiers 0–6 (file discovery → temporal intelligence)

@@ -124,6 +124,18 @@ The webview (`webview/src/**`) is React + Sigma.js + graphology. It renders grap
 
 `.reponav/index.db` (SQLite via WASM) caches analysis results, tours, and retrieval chunks. Cache invalidation is content-based (hashed inputs). The DB is created lazily on first analysis.
 
+## Self-application
+
+RepoNav's analyzer runs against RepoNav's own source. Two mechanisms make this observable.
+
+**Dogfood loop (factory-time).** The SDLC `review` skill invokes `reponav.analyze` on its own diff before merge. The governance engine's seam-detection rule (R17) runs against RepoNav's own source files. Epic 010-dogfood-signal-fixes (shipped 2026-04-07) closed four self-analysis bugs that only surfaced under self-application: a `CATEGORY_LAYER` key mismatch, an over-firing entry-point detector, a guard that bailed on self-analysis hints, and missing boundary-role entries for VS Code-adjacent packages. R17 hotspot output is checked into `.reponav/arch-context.md` and `.reponav/plan-next-context.md`, flagged in RepoNav's own files by the same rule that flags hotspots in user code.
+
+**MCP gate (agent-time).** A PreToolUse hook (`scripts/governance-mcp-gate.cjs`) intercepts broad architectural searches (`Grep`, `Glob`, `grep_search`) and requires a fresh `reponav.analyze` summary for the current commit state before allowing them. A pre-registered 36-cell eval (3 model classes × 3 arms × 4 reps, n=12 per arm; sweep `2026-05-03-1905-T6L8`, completed 2026-05-03) measured the behavioral effect. Across Haiku 4.5, Sonnet 4.6, and Opus 4.7 on a fair non-leaky fixture, supplying architectural context at agent decision time lifts correct architectural choice from 1/12 (8%) to 11/12 or 12/12 (92 to 100%): a **+83 to +92 percentage-point lift** depending on delivery channel (pre-loaded system-prompt blob vs mid-task tool call). Opus rose from 0% to 100%. The eval lives in the development harness today; full data publishes via the forthcoming `mansour-90/agent-reliability-scaffold` repository.
+
+Output formats are characterized separately. ADR-0041 (`docs/decisions/0041-toon-promotion-after-fidelity-bench.md`) benchmarks `summary` / `compact` / `json` / `toon` / `markdown` on three real fixtures (express, fastapi, RepoNav-self) under a pre-registered decision rule: TOON is 60–69% smaller than markdown at 100% fidelity on spot-checked counts; `summary` remains the default for orientation.
+
+The dogfood loop and the MCP gate share the same underlying tool but operate at different points in the lifecycle. Each is independently observable.
+
 ## Non-goals
 
 RepoNav explicitly does NOT:
