@@ -1,0 +1,69 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install root deps
+        run: npm install --no-audit --no-fund
+
+      - name: Install webview deps
+        run: npm install --prefix webview --no-audit --no-fund
+
+      - name: Build extension
+        run: npm run build
+
+      - name: Build webview
+        run: npm run build:webview
+
+      - name: Package vsix
+        run: npx --yes vsce package
+
+      # VS Code Marketplace publish is deferred until VSCE_PAT secret is set.
+      # The vsix is attached to the GitHub Release below; install manually via
+      # `code --install-extension reponav-x.y.z.vsix` or upload to Marketplace
+      # via the publisher dashboard (https://marketplace.visualstudio.com/manage).
+      # When VSCE_PAT is set, uncomment the step below and re-tag.
+      #
+      # - name: Publish to VS Code Marketplace
+      #   run: npx --yes vsce publish --no-dependencies --pat ${{ secrets.VSCE_PAT }}
+      #   env:
+      #     VSCE_PAT: ${{ secrets.VSCE_PAT }}
+
+      # CLI npm publish is deferred until NPM_TOKEN secret is set in repo.
+      # Users can install the CLI via the .vsix attached to the GitHub
+      # Release (extension surface) or via `git clone + npm install + npm link`.
+      # When NPM_TOKEN is configured, uncomment the step below and re-tag.
+      #
+      # - name: Publish CLI to npm
+      #   run: npm publish --access public
+      #   env:
+      #     NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: '*.vsix'
+          generate_release_notes: true
+          tag_name: ${{ github.ref_name }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

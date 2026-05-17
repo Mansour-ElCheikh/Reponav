@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "reponav": {
+      "command": "node_modules/.bin/vite-node",
+      "args": ["bin/mcp.ts"],
+      "type": "stdio"
+    }
+  }
+}

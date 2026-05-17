@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RepoNav Webview Test Harness</title>
+  <link rel="stylesheet" href="../../dist/webview/index.css" />
+  <script>
+    // Mock acquireVsCodeApi — matches the no-op fallback already in vscodeApi.ts
+    // but also stores postMessage calls so tests can inspect them.
+    window.__postedMessages = [];
+    window.acquireVsCodeApi = () => ({
+      postMessage: (msg) => { window.__postedMessages.push(msg); },
+      getState: () => null,
+      setState: () => {},
+    });
+  </script>
+</head>
+<body>
+  <div id="root"></div>
+  <script src="../../dist/webview/index.js"></script>
+</body>
+</html>

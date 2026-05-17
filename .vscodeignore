@@ -1,0 +1,50 @@
+# Files to exclude from the extension package
+.vscode/**
+.vscode-test/**
+.claude/**
+.github/**
+.reponav/**
+src/**
+bin/**
+shared/**
+webview/node_modules/**
+webview/src/**
+e2e/**
+docs/**
+dev/**
+scripts/**
+archive/**
+presentation/**
+presentation-v2/**
+coverage/**
+test-results/**
+webview/node_modules/**
+wasm/**
+*.map
+*.vsix
+*.pdf
+*.log
+*.md
+!README.md
+!CHANGELOG.md
+!LICENSE
+.gitignore
+.eslintrc.json
+.mcp.json
+tsconfig.json
+esbuild.js
+vitest.config.ts
+playwright.config.ts
+action.yml
+slides.md
+
+# Include only built assets
+!dist/**
+!media/**
+!package.json
+!README.md
+!LICENSE
+!NOTICE
+# node_modules: vsce ships production deps automatically when
+# `--no-dependencies` is NOT passed to vsce package. See esbuild.js
+# sharedExternal comment for why all prod deps are externalized.
