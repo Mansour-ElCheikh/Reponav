@@ -4,7 +4,15 @@
  * satisfy the Component 002 contract from epic-007.
  */
 import { describe, it, expect } from 'vitest';
-import type { FlowStep, FlowAnomaly, FlowSequence, AnalysisReport, AnalysisReportSummary } from './types';
+import type {
+    FlowStep,
+    FlowAnomaly,
+    FlowSequence,
+    AnalysisReport,
+    AnalysisReportSummary,
+    AnalysisSummaryPayload,
+    SummarySignal,
+} from './types';
 
 // ─── Task 13: FlowStep compiles with filePath, fileCategory, layer ────────
 
@@ -119,5 +127,54 @@ describe('AnalysisReport.flows field (T16)', () => {
         };
         expect(report.toolingFlowCount).toBe(2);
         expect(report.toolingEntryPoints).toEqual(['bin/reponav.ts', 'bin/mcp.ts']);
+    });
+});
+
+describe('signal contract summary types', () => {
+    it('accepts signal envelopes with family, kind, and basis', () => {
+        const signal: SummarySignal<Array<{ file: string; value: number | null }>> = {
+            id: 'instability',
+            label: 'Instability',
+            family: 'architecture',
+            kind: 'derived',
+            basis: 'fullWorkspace',
+            sampled: false,
+            data: [{ file: 'src/app.ts', value: 0.5 }],
+        };
+
+        expect(signal.family).toBe('architecture');
+        expect(signal.kind).toBe('derived');
+        expect(signal.basis).toBe('fullWorkspace');
+    });
+
+    it('accepts additive summary payload sections without removing legacy fields', () => {
+        const payload: AnalysisSummaryPayload = {
+            workspaceRoot: '/repo',
+            primaryLanguage: 'typescript',
+            frameworks: [],
+            completeness: {
+                analysisScope: 'fullWorkspace',
+                analyzedFileCount: 1,
+                graphNodeCount: 1,
+                graphEdgeCount: 0,
+                analysisCoverage: 'complete',
+                graphCoverage: 'complete',
+                isSampled: false,
+            },
+            entryPoints: [],
+            runtimeRoots: [],
+            launchSurfaces: [],
+            hotFiles: [],
+            orphanCount: 0,
+            totalFiles: 1,
+            circularDeps: 0,
+            hotFilesCoverage: 0,
+            architecture: [],
+            risk: [],
+            confidence: [],
+        };
+
+        expect(payload.runtimeRoots).toEqual([]);
+        expect(payload.hotFilesCoverage).toBe(0);
     });
 });

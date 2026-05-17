@@ -111,6 +111,10 @@ describe('createMcpServer — tool registration', () => {
         expect(format.enum).toContain('summary');
         expect(format.enum).toContain('compact');
         expect(format.enum).toContain('json');
+        expect(tool.description).toContain('first orientation');
+        expect(tool.description).toContain('architecture/risk/confidence');
+        expect(tool.description).toContain('ownership concentration');
+        expect(tool.description).toContain('dangerous hotspots');
         await client.close();
     });
 
@@ -171,6 +175,11 @@ describe('createMcpServer — analyze tool', () => {
         expect(parsed).toHaveProperty('hotFiles');
         expect(parsed).toHaveProperty('orphanCount');
         expect(parsed).toHaveProperty('completeness');
+        expect(parsed).toHaveProperty('runtimeRoots');
+        expect(parsed).toHaveProperty('launchSurfaces');
+        expect(parsed).toHaveProperty('architecture');
+        expect(parsed).toHaveProperty('risk');
+        expect(parsed).toHaveProperty('confidence');
         expect((parsed.hotFiles as unknown[]).length).toBeGreaterThan(0);
         expect(parsed).not.toHaveProperty('metrics'); // fileMetrics must be absent
         expect(parsed.completeness).toEqual(expect.objectContaining({

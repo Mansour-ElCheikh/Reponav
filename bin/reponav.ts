@@ -39,7 +39,7 @@ const USAGE = `
 Usage: reponav <command> [options]
 
 Commands:
-  analyze            Run Tier 0 + Tier 1 analysis on a repository
+  analyze            Run RepoNav analysis on a repository
   check              Gate: exit 1 if analysis thresholds are breached
   coupling           Mine co-change pairs from git history
   dead-code          Detect unreachable symbols
@@ -51,8 +51,9 @@ Commands:
 
 Options:
   --repo <path>              Path to the repository to analyze (required)
-  --format <fmt>             Output format: json (default) | compact | table | toon
-  --tier <0-5>               Analysis depth: 0 (Fast) to 5 (Federation) (default: 1)
+  --format <fmt>             Output format: json (default) | summary | compact | table | toon
+                             summary = first orientation with architecture/risk/confidence sections
+  --tier <0-6>               Analysis depth: 0 (Fast) to 6 (Temporal) (default: 1)
   --help                     Print this help message
 
     check-specific:
@@ -73,7 +74,9 @@ Exit codes:
   2  Invalid arguments or path not found
 
 Examples:
+  reponav analyze --repo ./my-project --format summary
   reponav analyze --repo ./my-project --format json
+  reponav analyze --repo ./my-project --format summary --tier 6
   reponav check --repo ./my-project --max-violations 5 --max-dead-code 20
   reponav impact --repo ./my-project --symbol analyzeFile
 `.trim();

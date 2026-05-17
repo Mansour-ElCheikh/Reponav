@@ -137,7 +137,7 @@ export function normalizeAnalysisOptions(adapter: WorkspaceAdapter, options?: An
 }
 
 /** Build a glob pattern that excludes noise directories and files. */
-export function buildExcludePattern(): string {
+function buildExcludePattern(): string {
     return `{${IGNORE_PATTERNS.map((pattern) => `**/${pattern}`).join(',')}}`;
 }
 

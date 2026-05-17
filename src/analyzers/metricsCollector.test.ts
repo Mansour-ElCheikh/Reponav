@@ -20,6 +20,7 @@ describe('metricsCollector', () => {
         ]);
         const result = await collectMetrics(files, []);
         expect(result.orphanFiles).toContain('src/orphan.ts');
+        expect(result.fileMetrics[0]?.instability).toBeNull();
     });
 
     it('collectMetrics returns empty for empty workspace', async () => {
@@ -51,5 +52,27 @@ describe('metricsCollector', () => {
         const totalFanIn = result.fileMetrics.reduce((acc, m) => acc + m.fanIn, 0);
         const hotFanIn = result.hotFiles.reduce((acc, m) => acc + m.fanIn, 0);
         expect(hotFanIn / totalFanIn).toBeGreaterThanOrEqual(0.8);
+    });
+
+    it('derives instability from fan-in and fan-out', async () => {
+        const files = new Map<string, string>([
+            ['src/a.ts', 'export const a = 1;'],
+            ['src/b.ts', "import { a } from './a'; export const b = a;"],
+            ['src/c.ts', "import { a } from './a'; export const c = a;"],
+            ['src/d.ts', "import { a } from './a'; import { b } from './b'; export const d = [a, b];"],
+        ]);
+        const edges: ImportEdge[] = [
+            { source: 'src/b.ts', target: 'src/a.ts', specifiers: ['a'], isDynamic: false, rawStatement: '' },
+            { source: 'src/c.ts', target: 'src/a.ts', specifiers: ['a'], isDynamic: false, rawStatement: '' },
+            { source: 'src/d.ts', target: 'src/a.ts', specifiers: ['a'], isDynamic: false, rawStatement: '' },
+            { source: 'src/d.ts', target: 'src/b.ts', specifiers: ['b'], isDynamic: false, rawStatement: '' },
+        ];
+
+        const result = await collectMetrics(files, edges);
+        const metric = result.fileMetrics.find((entry) => entry.path === 'src/d.ts');
+
+        expect(metric?.fanIn).toBe(0);
+        expect(metric?.fanOut).toBe(2);
+        expect(metric?.instability).toBe(1);
     });
 });

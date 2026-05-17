@@ -50,7 +50,8 @@ describe('fileClassifier — new framework/Vite rules (RED until implemented)', 
         ['repository files', ['src/repositories/UserRepo.ts', 'src/user.repository.ts'], 'model'],
         ['constants files', ['src/constants/routes.ts', 'src/app.constants.ts'], 'type'],
         ['validator and schema files', ['src/validators/UserValidator.ts', 'src/user.validator.ts', 'src/user.schema.ts'], 'utility'],
-        ['mock and fixture files', ['src/__mocks__/MockProvider.ts', 'src/fixtures/userData.ts', 'src/auth.mock.ts'], 'test'],
+        ['mock files', ['src/__mocks__/MockProvider.ts', 'src/auth.mock.ts'], 'test'],
+        ['fixture files', ['src/fixtures/userData.ts', 'src/__fixtures__/data.json'], 'fixture'],
         ['plugin files', ['plugins/myPlugin.ts', 'src/plugins/vitePlugin.ts'], 'config'],
     ])('classifies %s as %s', async (_label, filePaths, expectedCategory) => {
         for (const filePath of filePaths) {

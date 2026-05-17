@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import type { SymbolEdge } from '../types';
-import { computeBlastRadius } from './blastRadiusAnalyzer';
+import type { ImportEdge, SymbolEdge } from '../types';
+import { computeBlastRadius, computeFilePropagationReach, rankFilePropagationReach } from './blastRadiusAnalyzer';
 
 /** Builds a SymbolEdge for test convenience. */
 function edge(sourceName: string, sourceFile: string, targetName: string, targetFile: string, edgeType: SymbolEdge['edgeType'] = 'calls'): SymbolEdge {
@@ -98,5 +98,31 @@ describe('computeBlastRadius', () => {
         const start = performance.now();
         computeBlastRadius('root', 'root.ts', edges);
         expect(performance.now() - start).toBeLessThan(200);
+    });
+});
+
+describe('file propagation reach', () => {
+    it('normalizes reverse-reach over the full file set', () => {
+        const files = ['src/a.ts', 'src/b.ts', 'src/c.ts', 'src/d.ts'];
+        const edges: ImportEdge[] = [
+            { source: 'src/b.ts', target: 'src/a.ts', specifiers: [], isDynamic: false, rawStatement: '' },
+            { source: 'src/c.ts', target: 'src/b.ts', specifiers: [], isDynamic: false, rawStatement: '' },
+        ];
+
+        expect(computeFilePropagationReach('src/a.ts', files, edges)).toBe(0.5);
+    });
+
+    it('ranks the highest-reach files first', () => {
+        const files = ['src/a.ts', 'src/b.ts', 'src/c.ts', 'src/d.ts'];
+        const edges: ImportEdge[] = [
+            { source: 'src/b.ts', target: 'src/a.ts', specifiers: [], isDynamic: false, rawStatement: '' },
+            { source: 'src/c.ts', target: 'src/b.ts', specifiers: [], isDynamic: false, rawStatement: '' },
+            { source: 'src/d.ts', target: 'src/a.ts', specifiers: [], isDynamic: false, rawStatement: '' },
+        ];
+
+        const ranked = rankFilePropagationReach(files, edges, 2);
+
+        expect(ranked[0]).toEqual(expect.objectContaining({ file: 'src/a.ts', value: 0.75 }));
+        expect(ranked[1]?.value).toBeLessThanOrEqual(ranked[0]!.value);
     });
 });

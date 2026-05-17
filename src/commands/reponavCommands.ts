@@ -16,8 +16,11 @@ import { detectSeams } from '../analyzers/seamDetector';
 import { withAnalysisCompleteness } from '../services/analysisCompleteness';
 import { computeCacheKey, readAnalysisCache, writeAnalysisCache, readCouplingCache, writeCouplingCache } from '../services/diskAnalysisCache';
 import { TreeSitterProvider } from '../analyzers/TreeSitterProvider';
+import { buildSummaryPayload, validateSummarySignalContract } from './summarySignals';
 import type { WorkspaceAdapter } from '../WorkspaceAdapter';
 import type { AnalysisReport, DeadCodeCandidate, CoChangePair, FlowSequence } from '../types';
+
+export { buildSummaryPayload, validateSummarySignalContract };
 
 const HEADLESS_ANALYSIS_OPTIONS = { scope: 'fullWorkspace' as const };
 const DEFAULT_CONFIDENCE_THRESHOLD = 0.5;
@@ -222,21 +225,6 @@ export async function runSeams(
     return { exitCode: 0, output: JSON.stringify(seams, null, 2), error: '' };
 }
 
-/** Builds the summary payload shape from a report (used for both cache-hit and miss paths). */
-export function buildSummaryPayload(report: AnalysisReport): object {
-    return {
-        workspaceRoot: report.workspaceRoot,
-        primaryLanguage: report.primaryLanguage,
-        frameworks: report.frameworks,
-        completeness: report.completeness,
-        entryPoints: report.entryPoints,
-        hotFiles: report.metrics.hotFiles,
-        orphanCount: report.metrics.orphanFiles.length,
-        totalFiles: report.metrics.totalFiles,
-        circularDeps: report.dependencyGraph.circularDependencies.length,
-        hotFilesCoverage: report.metrics.hotFiles.reduce((acc, f) => acc + f.fanIn, 0) / Math.max(report.metrics.fileMetrics.reduce((acc, m) => acc + m.fanIn, 0), 1),
-    };
-}
 
 function formatAnalysisOutput(report: AnalysisReport, format: string): string {
     if (format === 'json') return JSON.stringify(report, null, 2);

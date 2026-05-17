@@ -157,6 +157,7 @@ export class DynamicLLMProvider implements LLMProvider {
                 mode,
                 chosen: provider.name,
                 candidatesTried,
+                cascadeFailed: false,
             });
             return response;
         } catch (error) {
@@ -182,6 +183,7 @@ export class DynamicLLMProvider implements LLMProvider {
                             mode,
                             chosen: fallback.name,
                             candidatesTried,
+                            cascadeFailed: false,
                         });
                         return result;
                     } catch (fallbackError) {
@@ -231,6 +233,7 @@ export class DynamicLLMProvider implements LLMProvider {
                     mode,
                     chosen: provider.name,
                     candidatesTried,
+                    cascadeFailed: false,
                 });
                 yield response.text;
                 return;
@@ -256,6 +259,7 @@ export class DynamicLLMProvider implements LLMProvider {
                             mode,
                             chosen: fallback.name,
                             candidatesTried,
+                            cascadeFailed: false,
                         });
                         yield response.text;
                         return;
@@ -281,7 +285,18 @@ export class DynamicLLMProvider implements LLMProvider {
         // Non-auto mode: use the selected provider directly
         const t0 = Date.now();
         if (provider.generateStream) {
-            yield* provider.generateStream(systemPrompt, userPrompt);
+            // Capture an approximate token cost for streaming responses where
+            // the provider does not surface a final usage object. bytes/4 is
+            // the same heuristic the proctor scripts use; precise counts would
+            // require a per-provider countTokens call, which is deferred.
+            let outputBytes = 0;
+            for await (const chunk of provider.generateStream(systemPrompt, userPrompt)) {
+                outputBytes += Buffer.byteLength(chunk, 'utf8');
+                yield chunk;
+            }
+            const inputBytes = Buffer.byteLength(systemPrompt + userPrompt, 'utf8');
+            const estInput = Math.ceil(inputBytes / 4);
+            const estOutput = Math.ceil(outputBytes / 4);
             logLLMUsage({
                 provider: provider.name,
                 durationMs: Date.now() - t0,
@@ -289,6 +304,12 @@ export class DynamicLLMProvider implements LLMProvider {
                 mode,
                 chosen: provider.name,
                 candidatesTried: [provider.name],
+                cascadeFailed: false,
+                inputTokens: estInput,
+                outputTokens: estOutput,
+                promptTokens: estInput,
+                completionTokens: estOutput,
+                totalTokens: estInput + estOutput,
             });
             return;
         }
@@ -305,6 +326,7 @@ export class DynamicLLMProvider implements LLMProvider {
             mode,
             chosen: provider.name,
             candidatesTried: [provider.name],
+            cascadeFailed: false,
         });
         yield response.text;
     }

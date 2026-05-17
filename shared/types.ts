@@ -11,7 +11,9 @@
 export type FileCategory =
     | 'entry' | 'route' | 'controller' | 'service' | 'model'
     | 'component' | 'utility' | 'config' | 'middleware' | 'test'
-    | 'style' | 'asset' | 'migration' | 'type' | 'libSource' | 'unknown';
+    | 'style' | 'asset' | 'migration' | 'type' | 'libSource'
+    | 'e2e' | 'example' | 'fixture' | 'archive'
+    | 'unknown';
 
 export type EntrySurface = 'runtime' | 'tooling';
 
@@ -28,6 +30,8 @@ export interface AnalysisCompleteness {
     graphSampleLimit?: number;
     analysisCoverage: CompletenessCoverage;
     graphCoverage: CompletenessCoverage;
+    isSampled?: boolean;
+    cappedAt?: number;
 }
 
 // ─── Tour Types ─────────────────────────────────────────────────────────────

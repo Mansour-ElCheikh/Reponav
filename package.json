@@ -2,14 +2,14 @@
     "name": "reponav",
     "displayName": "RepoNav — Architecture Tours",
     "description": "Generate interactive architecture tours for any codebase. Understand repos in minutes, not days.",
-    "version": "0.1.3",
+    "version": "0.2.1",
     "publisher": "reponav",
     "bin": {
         "reponav": "./dist/bin/reponav.js"
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/mansour-90/reponav"
+        "url": "https://github.com/Mansour-ElCheikh/Reponav"
     },
     "engines": {
         "vscode": "^1.85.0"
@@ -184,6 +184,7 @@
         "lint": "npm run lint:root && npm run lint:webview",
         "lint:root": "eslint --ext .ts,.tsx src/ bin/",
         "lint:webview": "eslint --ext .ts,.tsx webview/src/",
+        "build:proctor-rollup": "npx esbuild src/proctor/proctorRollup.ts --bundle --platform=node --format=cjs --outfile=scripts/proctor/rollup.cjs",
         "test": "npm run test:root && npm run test:webview",
         "test:unit": "vitest run",
         "test:root": "npm run test:coverage:check",

@@ -140,7 +140,8 @@ describe('AnalysisOrchestrator', () => {
                 graphNodeCount: 1,
                 graphEdgeCount: 0,
                 analysisCoverage: 'sampled',
-                graphCoverage: 'complete',
+                graphCoverage: 'sampled',
+                isSampled: true,
             });
             expect(sendAnalysis).toHaveBeenLastCalledWith(
                 expect.objectContaining({
@@ -188,7 +189,8 @@ describe('AnalysisOrchestrator', () => {
                 graphNodeCount: 1,
                 graphEdgeCount: 0,
                 analysisCoverage: 'sampled',
-                graphCoverage: 'complete',
+                graphCoverage: 'sampled',
+                isSampled: true,
             });
             expect(sendAnalysis).toHaveBeenCalledWith(
                 expect.objectContaining({

@@ -28,7 +28,7 @@ export {
     TourStreamEndMessage,
 } from '../shared/types';
 
-import type { AnalysisCompleteness, FileCategory } from '../shared/types';
+import type { AnalysisCompleteness, AnalysisScope, FileCategory } from '../shared/types';
 import type { FlowSequence } from './analyzers/flowDetector';
 
 export type { FlowSequence };
@@ -78,6 +78,48 @@ export interface FileMetrics {
     exportCount: number;
     fanIn: number;
     fanOut: number;
+    instability?: number | null;
+}
+
+/** Signal family classification for agent-facing summary output. */
+export type SignalFamily = 'architecture' | 'risk' | 'confidence';
+
+/** Signal interpretation kind for agent-facing summary output. */
+export type SignalKind = 'fact' | 'derived' | 'gate-hint';
+
+/** Basis declaration for a surfaced signal: the analysis scope that produced it, or `'unknown'`
+ *  when completeness metadata is absent. Truth-first principle — never overclaim a basis. */
+export type SignalBasis = AnalysisScope | 'unknown';
+
+/** Envelope for a surfaced signal in the summary contract. */
+export interface SummarySignal<T = unknown> {
+    id: string;
+    label: string;
+    family: SignalFamily;
+    kind: SignalKind;
+    basis: SignalBasis;
+    sampled: boolean;
+    cappedAt?: number;
+    data: T;
+}
+
+/** Agent-facing summary payload returned by CLI/MCP summary format. */
+export interface AnalysisSummaryPayload {
+    workspaceRoot: string;
+    primaryLanguage: string;
+    frameworks: FrameworkInfo[];
+    completeness?: AnalysisCompleteness;
+    entryPoints: EntryPoint[];
+    runtimeRoots: string[];
+    launchSurfaces: string[];
+    hotFiles: FileMetrics[];
+    orphanCount: number;
+    totalFiles: number;
+    circularDeps: number;
+    hotFilesCoverage: number;
+    architecture: SummarySignal[];
+    risk: SummarySignal[];
+    confidence: SummarySignal[];
 }
 
 // ─── Architecture Intelligence Types (v2.0) ────────────────────────────────

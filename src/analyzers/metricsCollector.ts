@@ -19,6 +19,13 @@ interface MetricsSummary {
     orphanFiles: string[];
 }
 
+// Derive Instability (I) from fan-in / fan-out while preserving isolated files as null.
+function computeInstability(fanIn: number, fanOut: number): number | null {
+    const totalCoupling = fanIn + fanOut;
+    if (totalCoupling === 0) return null;
+    return fanOut / totalCoupling;
+}
+
 function countNonEmptyLines(content: string): number {
     return content
         .split(/\r?\n/)
@@ -68,6 +75,7 @@ export async function collectMetrics(
             exportCount: countExportStatements(content),
             fanIn: fanIn.get(filePath) ?? 0,
             fanOut: fanOut.get(filePath) ?? 0,
+            instability: computeInstability(fanIn.get(filePath) ?? 0, fanOut.get(filePath) ?? 0),
         });
     }
 

@@ -5,6 +5,7 @@
  * argument handling, output shape, and exit codes. The main() function
  * is the same code path a spawned process would exercise.
  */
+import { execSync } from 'child_process';
 import { promises as fs } from 'fs';
 import * as os from 'os';
 import * as path from 'path';
@@ -14,6 +15,21 @@ import { main } from './reponav';
 
 const REPO_ROOT = path.resolve(__dirname, '..');
 
+// Count commits at REPO_ROOT. Used as a runtime precondition for tier-6
+// temporal-signal assertions, which require multi-commit history. In the
+// verify-oss-extract pipeline the public extract is `git init`ed with one
+// commit, so temporal tier-6 tests cannot satisfy their preconditions there.
+const REPO_COMMIT_COUNT = (() => {
+    try {
+        return parseInt(
+            execSync('git rev-list --count HEAD', { cwd: REPO_ROOT, encoding: 'utf8' }).trim(),
+            10,
+        );
+    } catch {
+        return 0;
+    }
+})();
+
 // ─── Task 6 — --help and missing --repo ──────────────────────────────────────
 
 describe('reponav CLI — help and argument validation', () => {
@@ -22,6 +38,9 @@ describe('reponav CLI — help and argument validation', () => {
         expect(exitCode).toBe(0);
         expect(output).toContain('Usage');
         expect(output).toContain('--repo');
+        expect(output).toContain('summary');
+        expect(output).toContain('architecture/risk/confidence');
+        expect(output).toContain('--tier <0-6>');
     });
 
     it('exits 2 and emits error when --repo is missing', async () => {
@@ -107,10 +126,15 @@ describe('reponav CLI — analyze output', () => {
         expect(summary).toHaveProperty('frameworks');
         expect(summary).toHaveProperty('completeness');
         expect(summary).toHaveProperty('entryPoints');
+        expect(summary).toHaveProperty('runtimeRoots');
+        expect(summary).toHaveProperty('launchSurfaces');
         expect(summary).toHaveProperty('hotFiles');
         expect(summary).toHaveProperty('orphanCount');
         expect(summary).toHaveProperty('totalFiles');
         expect(summary).toHaveProperty('circularDeps');
+        expect(summary).toHaveProperty('architecture');
+        expect(summary).toHaveProperty('risk');
+        expect(summary).toHaveProperty('confidence');
         // Must NOT contain fileMetrics — the dominant token cost
         expect(summary).not.toHaveProperty('metrics');
         // hotFiles must be the self-calibrated slice (non-empty for a real repo)
@@ -129,6 +153,24 @@ describe('reponav CLI — analyze output', () => {
         expect(first).toHaveProperty('fanIn');
         expect(typeof first.fanIn).toBe('number');
     }, 30_000);
+
+    it.skipIf(REPO_COMMIT_COUNT < 10)(
+        'tier 6 summary surfaces the slice-2 risk signals when temporal data is available',
+        async () => {
+            const { exitCode, output } = await main([
+                'node', 'reponav', 'analyze', '--repo', REPO_ROOT, '--format', 'summary', '--tier', '6',
+            ]);
+            expect(exitCode).toBe(0);
+
+            const summary = JSON.parse(output) as Record<string, Array<Record<string, unknown>>>;
+            expect(summary.risk).toEqual(expect.arrayContaining([
+                expect.objectContaining({ id: 'temporal-hotspots', family: 'risk' }),
+                expect.objectContaining({ id: 'ownership-concentration', family: 'risk' }),
+                expect.objectContaining({ id: 'dangerous-hotspots', family: 'risk' }),
+            ]));
+        },
+        60_000,
+    );
 
     it('summary format hotFiles covers 80% of internal import edges (self-calibration invariant)', async () => {
         const { exitCode, output } = await main(['node', 'reponav', 'analyze', '--repo', REPO_ROOT, '--format', 'summary']);

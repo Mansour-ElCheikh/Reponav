@@ -39,6 +39,7 @@ function logUsage(entry: {
     params: Record<string, unknown>;
     durationMs: number;
     outputChars: number;
+    outputFormat?: string;
 }): void {
     const line = JSON.stringify({
         ts: new Date().toISOString(),
@@ -48,6 +49,7 @@ function logUsage(entry: {
         duration_ms: entry.durationMs,
         output_chars: entry.outputChars,
         approx_tokens: Math.round(entry.outputChars / 4),
+        output_format: entry.outputFormat ?? null,
     });
     try {
         fs.appendFileSync(USAGE_LOG, line + '\n');
@@ -73,12 +75,18 @@ function withLogging<T extends Record<string, unknown>>(
         const result = await handler(args);
         const outputText = result.content[0]?.text ?? '';
         const { repo, ...rest } = args;
+        // Capture caller-requested format (if any) so format-distribution
+        // analytics can show actual TOON/json/summary/compact uptake.
+        const fmt = typeof (args as Record<string, unknown>).format === 'string'
+            ? String((args as Record<string, unknown>).format)
+            : undefined;
         logUsage({
             tool: toolName,
             repo: String(repo ?? ''),
             params: rest,
             durationMs: Date.now() - t0,
             outputChars: outputText.length,
+            outputFormat: fmt,
         });
         return result;
     };
@@ -124,7 +132,8 @@ export function createMcpServer(): McpServer {
     server.tool(
         'analyze',
         'Run Tier 0 + Tier 1 static analysis on a repository. ' +
-        'summary format (~200-500 tokens, DEFAULT): self-calibrating hotFiles covering 80% of import traffic + orphan count + entry points. Start here. ' +
+        'summary format (~200-500 tokens, DEFAULT): first orientation surface with explicit architecture/risk/confidence sections, scope/completeness truth, preserved legacy fields, and slice-2 risk signals such as ownership concentration and dangerous hotspots when temporal data is available. Start here. ' +
+        'toon format (~1-2K tokens): preferred for agent consumption — 60-65% smaller than markdown at 100% fidelity on key counts (verified by scripts/bench/toon-vs-markdown.mjs, 2026-04-30). Use when summary is insufficient but you do not need full json. ' +
         'compact format (~20K tokens): all per-file metrics, frameworks, entry points, circular deps. ' +
         'json format (~114K tokens): full dependency graph, file classifications, layer violations, boundary roles. ' +
         'Use tier parameter to control depth (0-6). Tier 5 includes multi-repo federation. Tier 6 includes temporal intelligence (git history).',
@@ -134,7 +143,7 @@ export function createMcpServer(): McpServer {
                 .enum(['summary', 'compact', 'json', 'toon'])
                 .optional()
                 .default('summary')
-                .describe('summary (~200-500 tokens, default) | compact (~20K tokens) | json (~114K tokens, full report) | toon (High-density for agents)'),
+                .describe('summary (~200-500 tokens, default first orientation with architecture/risk/confidence sections, ownership concentration, and dangerous hotspots when temporal data is available) | toon (~1-2K tokens, preferred next step for agent consumption — 60-65% smaller than markdown at 100% fidelity) | compact (~20K tokens) | json (~114K tokens, full report)'),
             tier: z
                 .number()
                 .int()

@@ -4,7 +4,6 @@ import {
     isExcludedPath,
     dedupePaths,
     getPathPriority,
-    buildExcludePattern,
     DEFAULT_INTERACTIVE_MAX_FILES,
     IGNORE_PATTERNS,
     BINARY_EXTENSIONS,
@@ -58,10 +57,6 @@ describe('fileSelection', () => {
 
     it('getPathPriority discounts the current low-signal penalty in fullWorkspace scope', () => {
         expect(getPathPriority('docs/examples/guide.ts', 'fullWorkspace', [])).toBe(150);
-    });
-
-    it('buildExcludePattern returns a non-empty string', () => {
-        expect(buildExcludePattern().length).toBeGreaterThan(0);
     });
 
     it('IGNORE_PATTERNS is a non-empty array', () => {

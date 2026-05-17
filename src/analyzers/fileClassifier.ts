@@ -25,11 +25,21 @@ interface ClassificationRule {
 }
 
 const RULES: ClassificationRule[] = [
+    // ─── E2E (matched before test so e2e files don't fall into the generic test bucket) ───
+    { category: 'e2e', confidence: 'high', namePattern: /\.e2e\.(ts|tsx|js|jsx|mts|cts)$/, reason: 'E2E test file naming' },
+    { category: 'e2e', confidence: 'high', pathPattern: /(?:^|[\\/])e2e[\\/]/, reason: 'In e2e directory' },
+
     // ─── Tests ────────────────────────────────────────────────────────────────
     { category: 'test', confidence: 'high', pathPattern: /(?:^|[\\/])__tests__[\\/]/, reason: 'In __tests__ directory' },
     { category: 'test', confidence: 'high', pathPattern: /(?:^|[\\/])tests?[\\/]/, reason: 'In test(s) directory' },
     { category: 'test', confidence: 'high', namePattern: /\.(test|spec)\.(ts|tsx|js|jsx|py)$/, reason: 'Test/spec file naming' },
     { category: 'test', confidence: 'medium', namePattern: /^test_.*\.py$/, reason: 'Python test file convention' },
+
+    // ─── Examples / Fixtures / Archive (non-production source paths) ──────────
+    { category: 'example', confidence: 'high', pathPattern: /(?:^|[\\/])examples?[\\/]/, reason: 'In examples directory' },
+    { category: 'fixture', confidence: 'high', pathPattern: /(?:^|[\\/])__fixtures__[\\/]/, reason: 'In __fixtures__ directory' },
+    { category: 'fixture', confidence: 'high', pathPattern: /(?:^|[\\/])fixtures?[\\/]/, reason: 'In fixtures directory' },
+    { category: 'archive', confidence: 'high', pathPattern: /(?:^|[\\/])archive[\\/]/, reason: 'In archive directory' },
 
     // ─── Config ───────────────────────────────────────────────────────────────
     { category: 'config', confidence: 'high', namePattern: /^(tsconfig|jest\.config|vitest\.config|webpack\.config|vite\.config|next\.config|babel\.config|eslint\.config|prettier\.config)\.(ts|js|mjs|json)$/, reason: 'Build/tool config file' },

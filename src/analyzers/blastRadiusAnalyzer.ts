@@ -1,4 +1,4 @@
-import type { BlastRadius, SymbolEdge } from '../types';
+import type { BlastRadius, ImportEdge, SymbolEdge } from '../types';
 
 /** Weight map for edge types used in blast-radius scoring. */
 const EDGE_WEIGHTS: Record<SymbolEdge['edgeType'], number> = {
@@ -91,4 +91,78 @@ export function computeBlastRadiusWithMap(
         score,
         byHop,
     };
+}
+
+// Build reverse file adjacency for propagation reach calculations.
+function buildFileReverseAdjacency(
+    files: string[],
+    edges: ImportEdge[],
+): Map<string, Set<string>> {
+    const reverseAdj = new Map<string, Set<string>>();
+    for (const file of files) {
+        reverseAdj.set(file, new Set());
+    }
+    for (const edge of edges) {
+        if (!reverseAdj.has(edge.target)) reverseAdj.set(edge.target, new Set());
+        reverseAdj.get(edge.target)!.add(edge.source);
+        if (!reverseAdj.has(edge.source)) reverseAdj.set(edge.source, new Set());
+    }
+    return reverseAdj;
+}
+
+// BFS over a precomputed reverse adjacency map. Used by both single-file and ranked propagation reach.
+function reachableCountFromReverseAdj(
+    filePath: string,
+    reverseAdj: Map<string, Set<string>>,
+): number {
+    const visited = new Set<string>([filePath]);
+    const queue: string[] = [filePath];
+
+    while (queue.length > 0) {
+        const current = queue.shift()!;
+        for (const dependent of reverseAdj.get(current) ?? []) {
+            if (visited.has(dependent)) continue;
+            visited.add(dependent);
+            queue.push(dependent);
+        }
+    }
+    return visited.size;
+}
+
+/** Compute reverse dependency reach for a file across the full analyzed file set. */
+export function computeFilePropagationReach(
+    filePath: string,
+    files: string[],
+    edges: ImportEdge[],
+): number | null {
+    if (files.length === 0) return null;
+    if (!files.includes(filePath)) return null;
+
+    const reverseAdj = buildFileReverseAdjacency(files, edges);
+    return (reachableCountFromReverseAdj(filePath, reverseAdj) - 1) / files.length;
+}
+
+/** Rank files by reverse dependency reach so summary output can surface the broadest blast areas. */
+export function rankFilePropagationReach(
+    files: string[],
+    edges: ImportEdge[],
+    limit: number,
+): Array<{ file: string; value: number }> {
+    if (files.length === 0) return [];
+
+    // Build reverse adjacency once and reuse across every file's BFS.
+    // Previously this was rebuilt per file inside computeFilePropagationReach, making the rank O(N²·E).
+    const reverseAdj = buildFileReverseAdjacency(files, edges);
+    const denominator = files.length;
+
+    return files
+        .map((file) => ({
+            file,
+            value: (reachableCountFromReverseAdj(file, reverseAdj) - 1) / denominator,
+        }))
+        .sort((left, right) => {
+            if (right.value !== left.value) return right.value - left.value;
+            return left.file.localeCompare(right.file);
+        })
+        .slice(0, limit);
 }

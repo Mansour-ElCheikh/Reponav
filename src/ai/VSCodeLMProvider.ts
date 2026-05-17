@@ -97,11 +97,26 @@ export class VSCodeLMProvider implements LLMProvider {
         for await (const chunk of response.text) {
             parts.push(chunk);
         }
+        const text = parts.join('');
+
+        // vscode.lm does not surface a usage object on the response. Approximate
+        // with the bytes/4 heuristic the proctor uses so llm-usage.jsonl records
+        // remain comparable across providers (S1.5a). Precise counts require
+        // model.countTokens() which is async and adds per-call latency; deferred.
+        const inputBytes = Buffer.byteLength(systemPrompt + userPrompt, 'utf8');
+        const outputBytes = Buffer.byteLength(text, 'utf8');
+        const promptTokens = Math.ceil(inputBytes / 4);
+        const completionTokens = Math.ceil(outputBytes / 4);
 
         return {
-            text: parts.join(''),
+            text,
             finishReason: 'stop',
             modelId: model.id,
+            usage: {
+                promptTokens,
+                completionTokens,
+                totalTokens: promptTokens + completionTokens,
+            },
         };
     }
 
